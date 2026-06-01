@@ -117,6 +117,218 @@ Les nœuds **multi-sortie** (`type="multioutput"`) exposent leurs ports via `<ou
 
 ---
 
+## 4.1 Logique de génération de code GLSL
+
+Cette section décrit la logique de code-gen a partir du modele MaterialX parse/valide.
+
+### 4.1.1 Vue d'ensemble du pipeline
+
+1. Le document est parse (`MtlxDocument`) puis valide.
+2. Le generateur choisit une cible a compiler: un nœud top-level, un `nodegraph` de sortie, ou un materiau (`surfacematerial`/`volumematerial`).
+3. Le graphe de dependances est resolu (references `nodename`, `nodegraph`, `output`, `interfacename`).
+4. Les nœuds sont ordonnes topologiquement pour garantir que chaque variable est emise avant usage.
+5. Chaque nœud est traduit en expression/fonction GLSL selon sa categorie + son type de sortie.
+6. Les sorties finales sont routees vers les sorties shader (`surface`, `bsdf`, `edf`, etc.) selon le contexte.
+
+### 4.1.2 Generation d'un nœud
+
+Pour chaque nœud instance:
+
+1. Identifier la categorie (`standard_surface`, `multiply`, `image`, etc.).
+2. Determiner le type de sortie (`float`, `color3`, `surfaceshader`, `BSDF`, ...).
+3. Resoudre chaque input dans cet ordre:
+  - `value` literal
+  - reference `nodename` (sortie d'un nœud deja calcule)
+  - reference `nodegraph` + `output`
+  - `interfacename` (parametre d'interface)
+4. Mapper type MaterialX -> type GLSL:
+  - `float` -> `float`
+  - `color3`/`vector3` -> `vec3`
+  - `color4`/`vector4` -> `vec4`
+  - `vector2` -> `vec2`
+  - `matrix33` -> `mat3`
+  - `matrix44` -> `mat4`
+5. Emettre le code GLSL:
+  - nœud simple: une expression inline (`a + b`, `normalize(v)`, `mix(x,y,t)`)
+  - nœud complexe: appel de fonction helper (ex. BRDF/BSDF)
+
+Exemple (conceptuel):
+
+```glsl
+vec3 N_mul = N_a * N_b;
+float N_rough = clamp(in_roughness, 0.001, 1.0);
+```
+
+### 4.1.3 Generation d'un nodegraph
+
+Un `nodegraph` devient un sous-programme GLSL logique:
+
+1. Les `<input>` du graph deviennent des parametres ou uniforms du bloc genere.
+2. Les nœuds internes sont emises dans l'ordre topologique.
+3. Les `<output>` du graph definissent les valeurs de retour exposees.
+4. Si le graph est reference via `nodegraph="..." output="..."`, le generateur lit la sortie nommee.
+
+Pattern frequent:
+
+```glsl
+// pseudo-signature generee
+void eval_NG_example(in vec2 uv, out vec3 baseColor, out float roughness) {
+  vec3 n1 = texture(u_tex, uv).rgb;
+  float n2 = clamp(u_rough, 0.0, 1.0);
+  baseColor = n1;
+  roughness = n2;
+}
+```
+
+### 4.1.4 Role de `nodedef` et `implementation` en GLSL
+
+`nodedef` definit l'interface stable du nœud (inputs/outputs/types).  
+`implementation` fournit la strategie de generation reelle pour un target donne.
+
+Pour le target GLSL (`target="genglsl"`):
+
+1. Rechercher une `implementation` compatible du `nodedef` vise.
+2. Si `sourcecode` est present, injecter le template en substituant les placeholders d'inputs/outputs.
+3. Si `file` est present, importer la fonction GLSL externe et generer l'appel.
+4. Sinon, fallback sur une implementation native du generateur (bibliotheque standard MaterialX).
+
+Exemple de substitution de template:
+
+```text
+sourcecode = "{{in}}.ss"
+in = structVar
+=> GLSL emis: structVar.ss
+```
+
+### 4.1.5 Gestion des nœuds multi-sortie
+
+Pour `type="multioutput"`:
+
+1. Les ports disponibles viennent des `<output>` du nœud (ou du `nodedef` associe).
+2. Le generateur cree soit:
+  - une structure GLSL intermediaire, soit
+  - plusieurs variables suffixees par port.
+3. Une connexion exige `output="portName"`; le code-gen lit explicitement ce port.
+
+Exemple logique:
+
+```glsl
+vec3 N_tex_outColor;
+float N_tex_outAlpha;
+// ...
+vec3 baseColor = N_tex_outColor;
+```
+
+### 4.1.6 Resolution des portees (scope)
+
+La logique de scope suit la validation:
+
+1. `nodename` dans un nœud interne de graph: portee locale du graph.
+2. `interfacename`: reference un input d'interface du graph (ou du `nodedef` lie).
+3. Input direct d'un `nodegraph` avec `nodename`: peut pointer un nœud top-level du document.
+4. `materialassign.material`: peut viser un nœud top-level ou un `nodegraph` exposant un type materiau.
+
+### 4.1.7 Emission finale shader
+
+Selon le point d'entree vise, le generateur raccorde les sorties vers le shader final:
+
+1. Surface: alimente les closures/evaluations de surface.
+2. Displacement: alimente la deformation de position.
+3. Volume: alimente l'integration volumetrique.
+4. Lumiere: alimente l'evaluation EDF/light shader.
+
+En pratique, le code final assemble:
+
+1. declarations (`uniform`, `in`, `out`)
+2. fonctions utilitaires
+3. evaluation des nodegraphs
+4. fonction principale du shader (`main` ou equivalent backend)
+
+### 4.1.8 Exemple de bout en bout (mini graph -> GLSL)
+
+Exemple MaterialX minimal: on lit une texture, on applique un facteur, puis on branche le resultat sur un `standard_surface`.
+
+```xml
+<materialx version="1.39">
+  <nodegraph name="NG_surface">
+    <input name="uv" type="vector2" value="0.0, 0.0"/>
+    <image name="tex" type="color3">
+      <input name="file" type="filename" value="albedo.png"/>
+      <input name="texcoord" type="vector2" interfacename="uv"/>
+    </image>
+    <multiply name="tinted" type="color3">
+      <input name="in1" type="color3" nodename="tex"/>
+      <input name="in2" type="color3" value="0.8, 0.7, 0.6"/>
+    </multiply>
+    <standard_surface name="surf" type="surfaceshader">
+      <input name="base_color" type="color3" nodename="tinted"/>
+      <input name="specular_roughness" type="float" value="0.25"/>
+    </standard_surface>
+    <output name="out" type="surfaceshader" nodename="surf"/>
+  </nodegraph>
+</materialx>
+```
+
+Traduction logique en GLSL (pseudo-code representatif):
+
+```glsl
+// 1) Interface d'entree du graph
+uniform sampler2D u_albedo;
+in vec2 v_uv;
+
+// 2) Evaluation du nodegraph
+vec3 NG_surface_baseColor(vec2 uv) {
+  vec3 N_tex = texture(u_albedo, uv).rgb;
+  vec3 N_tinted = N_tex * vec3(0.8, 0.7, 0.6);
+  return N_tinted;
+}
+
+// 3) Shader principal
+void main() {
+  vec3 baseColor = NG_surface_baseColor(v_uv);
+
+  // Representation simplifiee: standard_surface -> evaluation PBR runtime
+  float roughness = 0.25;
+  vec3 finalColor = evaluateStandardSurface(baseColor, roughness);
+
+  fragColor = vec4(finalColor, 1.0);
+}
+```
+
+Ce qu'il faut retenir dans cet exemple:
+
+1. `interfacename="uv"` devient un parametre d'evaluation (`uv` / `v_uv`).
+2. `nodename="tex"` devient une dependance de variable (`N_tex`).
+3. L'ordre d'emission est topologique: `tex` -> `tinted` -> `surf` -> `out`.
+4. Le nœud `standard_surface` n'est pas un simple operateur arithmetique: il mappe vers une fonction d'evaluation BRDF plus complete cote backend GLSL.
+
+### 4.1.9 Variante multi-sortie (exemple `UsdUVTexture`)
+
+Quand un nœud est `multioutput`, le code-gen expose explicitement chaque port consomme.
+
+```xml
+<UsdUVTexture name="tex" type="multioutput">
+  <input name="file" type="filename" value="basecolor.png"/>
+</UsdUVTexture>
+<standard_surface name="surf" type="surfaceshader">
+  <input name="base_color" type="color3" nodename="tex" output="rgb"/>
+</standard_surface>
+```
+
+Pseudo-emission GLSL:
+
+```glsl
+vec4 N_tex_rgba = texture(u_basecolor, v_uv);
+vec3 N_tex_rgb = N_tex_rgba.rgb;
+float N_tex_a = N_tex_rgba.a;
+
+vec3 baseColor = N_tex_rgb;
+```
+
+Le point cle est que `output="rgb"` impose un acces port-nomme, et non une sortie implicite unique.
+
+---
+
 ## 5. Tableau complet des nœuds concrets
 
 229 catégories observées, classées par groupe fonctionnel.
