@@ -1,0 +1,19 @@
+{
+  "name": "tests-materialx",
+  "version": "1.0.0",
+  "description": "MaterialX .mtlx file model and logical validator",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --experimental-vm-modules dist/test-mtlx.js",
+    "test:ts": "npx tsx src/test-mtlx.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "tsx": "^4.19.0"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.5.0"
+  }
+}
