@@ -150,6 +150,11 @@ Commentaire path tracer:
 - Terminé: validation build path tracer apres integration D4.2 (npm run build OK).
 - Terminé: étape intermediaire D4.3 (conductor closures natives) avec routage GLSL de `conductor_brdf` et `conductor_bsdf` sur un chemin conducteur dédié (lobe métallique natif + PDF/sampling cohérents via contrat closure).
 - Terminé: validation build path tracer apres integration D4.3 (npm run build OK).
+- Terminé: étape intermediaire D4.4 (dielectric closures natives) avec routage GLSL de `dielectric_brdf`, `dielectric_bsdf`, `dielectric_btdf` via chemin diélectrique dédié (branches réflexion/transmission + PDF/sampling cohérents).
+- Terminé: validation build path tracer apres integration D4.4 (npm run build OK).
+- Terminé: étape intermediaire D4.5 (EDF closures natives) avec routage heuristique de `uniform_edf` et `generalized_schlick_edf` dans le contrat closure (flags emissifs et sélection de modèle) sans double comptage de l'emission.
+- Terminé: ajout de presets GUI ciblés BTDF/TIR pour validation visuelle des branches diélectriques (`Dielectric BRDF Reflective`, `Dielectric BSDF Mixed`, `Dielectric BTDF TIR Target`).
+- Terminé: validation build path tracer apres integration D4.5 (npm run build OK).
 
 ### Etapes a faire
 
@@ -171,8 +176,8 @@ Constat actuel (resume):
 | D4.1 | Contrat closure unifie | Interface GLSL/TS commune: `EvalClosure`, `SampleClosure`, `PdfClosure`, `flags` (reflect/transmit/emissive) | Compilation + appel unique depuis le path tracer | Terminé (socle) |
 | D4.2 | Diffuse closures natives | `diffuse_brdf`, `oren_nayar_diffuse_bsdf`, `burley_diffuse_bsdf` relies aux evaluateurs GLSL natifs | Test scenes diffuse: energie <= 1 et bruit stable | Terminé (socle heuristique) |
 | D4.3 | Conductor closures natives | `conductor_brdf`, `conductor_bsdf` relies aux lobes speculaires adequats | Validation Fresnel/conducteur sur angles rasants | Terminé (socle heuristique) |
-| D4.4 | Dielectric closures natives | `dielectric_brdf`, `dielectric_bsdf`, `dielectric_btdf` avec branche reflexion/transmission et PDF coherentes | Verification TIR + conservation energie | A faire |
-| D4.5 | EDF closures natives | `uniform_edf`, `generalized_schlick_edf` relies a l'emission de surface/lumiere | NEE/MIS: emission stable sans double comptage | A faire |
+| D4.4 | Dielectric closures natives | `dielectric_brdf`, `dielectric_bsdf`, `dielectric_btdf` avec branche reflexion/transmission et PDF coherentes | Verification TIR + conservation energie | Terminé (socle heuristique) |
+| D4.5 | EDF closures natives | `uniform_edf`, `generalized_schlick_edf` relies a l'emission de surface/lumiere | NEE/MIS: emission stable sans double comptage | Terminé (socle heuristique) |
 | D4.6 | Composition closures | `layer`, `scaled_layer`, puis `add/mix/multiply` en mode BSDF/EDF (et non mode scalaire) | Scenes de layering: resultat monotone et sans spikes PDF | A faire |
 | D4.7 | Integration pathtrace | Routage dans `DirectLight` et boucle principale avec MIS coherent closure-par-closure | Regressions: pas de NaN, pas de fireflies systematiques | A faire |
 | D4.8 | Campagne de tests D4 | Suite de scenes cibles + checks numeriques (energie, PDF>0, variance) | Rapport de validation D4 complet | A faire |
