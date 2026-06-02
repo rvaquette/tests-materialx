@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "test": "node --experimental-vm-modules dist/test-mtlx.js",
-    "test:ts": "npx tsx src/test-mtlx.ts"
+    "test:ts": "npx tsx src/test-mtlx.ts",
+    "test:d1-targets": "npx tsx src/test-d1-targets.ts"
   },
   "devDependencies": {
     "@types/node": "^22.19.19",
