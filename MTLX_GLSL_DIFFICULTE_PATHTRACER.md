@@ -154,6 +154,8 @@ Commentaire path tracer:
 - Terminé: validation build path tracer apres integration D4.4 (npm run build OK).
 - Terminé: étape intermediaire D4.5 (EDF closures natives) avec routage heuristique de `uniform_edf` et `generalized_schlick_edf` dans le contrat closure (flags emissifs et sélection de modèle) sans double comptage de l'emission.
 - Terminé: étape intermediaire D4.6 (composition closures) avec alignement des noeuds `layer`, `scaled_layer`, `add`/`mix`/`multiply` en mode closure (BSDF/VDF/EDF) et limitation du comportement scalaire aux graphes non-closure.
+- Terminé: étape intermediaire D4.7 (integration pathtrace) avec routage `DirectLight` sur les flags de transport closure (reflect/transmit), propagation des flags dans la boucle principale et MIS conditionné aux echantillons surface valides.
+- En cours: étape intermediaire D4.8 (campagne de tests D4) avec validation statique shader + build OK; exécution runtime scene bloquée en Node v25 (erreur denoiser ESM/CJS `ERR_AMBIGUOUS_MODULE_SYNTAX`).
 - Terminé: ajout de presets GUI ciblés BTDF/TIR pour validation visuelle des branches diélectriques (`Dielectric BRDF Reflective`, `Dielectric BSDF Mixed`, `Dielectric BTDF TIR Target`).
 - Terminé: validation build path tracer apres integration D4.5 (npm run build OK).
 
@@ -180,8 +182,8 @@ Constat actuel (resume):
 | D4.4 | Dielectric closures natives | `dielectric_brdf`, `dielectric_bsdf`, `dielectric_btdf` avec branche reflexion/transmission et PDF coherentes | Verification TIR + conservation energie | Terminé (socle heuristique) |
 | D4.5 | EDF closures natives | `uniform_edf`, `generalized_schlick_edf` relies a l'emission de surface/lumiere | NEE/MIS: emission stable sans double comptage | Terminé (socle heuristique) |
 | D4.6 | Composition closures | `layer`, `scaled_layer`, puis `add/mix/multiply` en mode BSDF/EDF (et non mode scalaire) | Scenes de layering: resultat monotone et sans spikes PDF | Terminé (socle closure-level) |
-| D4.7 | Integration pathtrace | Routage dans `DirectLight` et boucle principale avec MIS coherent closure-par-closure | Regressions: pas de NaN, pas de fireflies systematiques | A faire |
-| D4.8 | Campagne de tests D4 | Suite de scenes cibles + checks numeriques (energie, PDF>0, variance) | Rapport de validation D4 complet | A faire |
+| D4.7 | Integration pathtrace | Routage dans `DirectLight` et boucle principale avec MIS coherent closure-par-closure | Regressions: pas de NaN, pas de fireflies systematiques | Terminé (socle integration) |
+| D4.8 | Campagne de tests D4 | Suite de scenes cibles + checks numeriques (energie, PDF>0, variance) | Rapport de validation D4 complet | En cours (bloque runtime Node v25) |
 
 Ordre recommande:
 1. D4.1 -> D4.2
