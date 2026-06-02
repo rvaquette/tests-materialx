@@ -19,7 +19,7 @@ Actions requises (priorisees):
 - [x] 2. D4-composition-native: migrer mix/layer/scaled_layer/multiply vers une composition au niveau des lobes closures (pas seulement une interpolation de radiance).
 - [x] 3. Surface binding coverage: etendre la collecte de bindings pour inclure les chaines nodename directes (et pas uniquement nodegraph).
 - [x] 4. Robustesse emission: remplacer les placeholders unresolved par des fallbacks types (zeroOfType) + warning de validation explicite.
-- [ ] 5. Env/light parity: definir une strategie explicite (CPU-only assumee ou GLSL runtime) et supprimer l'ambiguite entre extractConfig et emitGLSL.
+- [x] 5. Env/light parity: definir une strategie explicite (CPU-only assumee ou GLSL runtime) et supprimer l'ambiguite entre extractConfig et emitGLSL.
 - [ ] 6. Validation ciblee: ajouter des scenes de non-regression pour chaque action ci-dessus (closures D4, composition, bindings directs, erreurs de resolution).
 
 Definition de "vrai support MaterialX pathtracer" (mise a jour):
