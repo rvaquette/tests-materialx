@@ -8,7 +8,8 @@
     "test": "node --experimental-vm-modules dist/test-mtlx.js",
     "test:ts": "npx tsx src/test-mtlx.ts",
     "test:d1-targets": "npx tsx src/test-d1-targets.ts",
-    "test:d6-r1": "npx tsx src/test-d6-r1-inventory.ts"
+    "test:d6-r1": "npx tsx src/test-d6-r1-inventory.ts",
+    "test:d6-r2": "npx tsx src/test-d6-r2-translator.ts"
   },
   "devDependencies": {
     "@types/node": "^22.19.19",

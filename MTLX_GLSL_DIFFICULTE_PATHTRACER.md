@@ -292,19 +292,31 @@ Commentaire path tracer:
 	- Resultat courant: candidats non classes detectes pour tri D6.R1.b (ex: `geompropvalue`, `geomcolor`, `geomattr`, `geomprop`).
 	- Cible: lister les noeuds scene/meta (look, materialassign, collection, propertyset, geominfo, opgraph, token, etc.) et definir leur traitement pipeline (supporte, ignore, warning, erreur).
 
-- [ ] D6.R1.b - Completer la classification des candidats residuels
-	- Etat: non finalise
+- [x] D6.R1.b - Completer la classification des candidats residuels
+	- Etat: finalise (2026-06-03)
+	- Realisation: classification integree des candidats detectes (`geompropvalue`, `geomcolor`, `geomattr`, `geomattrvalue`, `geomprop`, `geompropvalueuniform`) dans l'inventaire D6, avec statut et rationale explicites.
+	- Realisation: traitement explicite de `token_image` comme `ignore` (noeud D2 texture hors perimetre D6 scene/meta) pour eviter les faux positifs du filtre heuristique.
+	- Validation: `npm run test:d6-r1` OK apres mise a jour.
+	- Resultat courant: `unknownCandidates=0`, totaux D6: `supporte=14`, `ignore=3`, `warning=5`, `erreur=5`, `presentNodes=24`.
 	- Cible: classifier les candidats detectes automatiquement (`geompropvalue`, `geomcolor`, `geomattr`, `geomattrvalue`, `geomprop`, `geompropvalueuniform`) puis rerunner la validation D6.R1 pour obtenir `unknownCandidates=0`.
 
-- [ ] D6.R2 - Traducteur scene MaterialX -> runtime interne
-	- Etat: non finalise
+- [x] D6.R2 - Traducteur scene MaterialX -> runtime interne
+	- Etat: finalise (2026-06-03)
+	- Realisation: ajout d'un traducteur scene `src/mtlx/sceneTranslator.ts` qui convertit `look/materialassign/collection` en mapping runtime `mesh -> material` avec traces d'assignation.
+	- Realisation: ajout du runner `src/test-d6-r2-translator.ts` et du script `npm run test:d6-r2` pour produire les artefacts D6.R2.
+	- Artefacts: `reports/mtlx-d6-r2-translation.json` et `reports/mtlx-d6-r2-translation.md`.
+	- Validation: `npm run test:d6-r2` OK.
+	- Resultat courant: 3 fixtures valides, 5 looks traduits, 17 assignments resolus, 0 erreur, 6 warnings, serialisation deterministe verifiee.
 	- Cible: convertir les assignations `look/materialassign/collection` en mapping explicite vers les meshes/instances du path tracer.
-- [ ] D6.R2.a - Resoudre les selecteurs geometriques et collections
-	- Etat: non finalise
-- [ ] D6.R2.b - Appliquer les priorites d'assignation en cas de conflit
-	- Etat: non finalise
-- [ ] D6.R2.c - Serialiser un resultat deterministe pour le runtime
-	- Etat: non finalise
+- [x] D6.R2.a - Resoudre les selecteurs geometriques et collections
+	- Etat: finalise (2026-06-03)
+	- Realisation: resolution des selecteurs `geom` (exact + wildcard) et des collections avec expansion recursive `includecollection` + diagnostics de cycles/references manquantes.
+- [x] D6.R2.b - Appliquer les priorites d'assignation en cas de conflit
+	- Etat: finalise (2026-06-03)
+	- Realisation: priorite deterministe par ordre d'heritage des looks puis ordre des `materialassign` (dernier assign gagne), valide sur fixture `look_assignment_order.mtlx`.
+- [x] D6.R2.c - Serialiser un resultat deterministe pour le runtime
+	- Etat: finalise (2026-06-03)
+	- Realisation: serialisation stable `serializeRuntimeSceneAssignment` avec tri explicite des looks/cles/traces et check de stabilite sur double serialisation.
 
 - [ ] D6.R3 - Resolution des proprietes et metadata hors shader
 	- Etat: non finalise

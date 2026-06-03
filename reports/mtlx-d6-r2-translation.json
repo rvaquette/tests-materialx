@@ -1,0 +1,85 @@
+{
+  "generatedAt": "2026-06-03T21:16:38.858Z",
+  "schema": "mtlx-scene-assignments-v1",
+  "fixtures": [
+    {
+      "file": "materialx/Materials/TestSuite/stdlib/geometric/look_assignment_order.mtlx",
+      "lookCount": 1,
+      "assignmentCount": 2,
+      "activeLook": "Look",
+      "diagnostics": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "preview": {
+        "look": "Look",
+        "meshToMaterial": {
+          "/Calibration_Mesh": "Red_Material",
+          "/Preview_Mesh": "Blue_Material"
+        }
+      }
+    },
+    {
+      "file": "materialx/Materials/TestSuite/stdlib/materials/material_node_discovery.mtlx",
+      "lookCount": 3,
+      "assignmentCount": 0,
+      "activeLook": "look1",
+      "diagnostics": {
+        "error": 0,
+        "warning": 6,
+        "info": 0
+      },
+      "preview": {
+        "look": "look1",
+        "meshToMaterial": {}
+      }
+    },
+    {
+      "file": "materialx/Materials/Examples/StandardSurface/standard_surface_chess_set.mtlx",
+      "lookCount": 1,
+      "assignmentCount": 15,
+      "activeLook": "L_ChessSet",
+      "diagnostics": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "preview": {
+        "look": "L_ChessSet",
+        "meshToMaterial": {
+          "Bishop_B": "M_Bishop_B",
+          "Bishop_W": "M_Bishop_W",
+          "Castle_B": "M_Castle_B",
+          "Castle_W": "M_Castle_W",
+          "Chessboard": "M_Chessboard",
+          "King_B": "M_King_B",
+          "King_W": "M_King_W",
+          "Knight_B": "M_Knight_B",
+          "Knight_W": "M_Knight_W",
+          "Pawn_Body_B": "M_Pawn_Body_B",
+          "Pawn_Body_W": "M_Pawn_Body_W",
+          "Pawn_Top_B": "M_Pawn_Top_B",
+          "Pawn_Top_W": "M_Pawn_Top_W",
+          "Queen_B": "M_Queen_B",
+          "Queen_W": "M_Queen_W"
+        }
+      }
+    }
+  ],
+  "totals": {
+    "files": 3,
+    "withLooks": 3,
+    "translatedLooks": 5,
+    "assignments": 17,
+    "diagnostics": {
+      "error": 0,
+      "warning": 6,
+      "info": 0
+    }
+  },
+  "deterministicSerialization": {
+    "fixture": "materialx/Materials/TestSuite/stdlib/geometric/look_assignment_order.mtlx",
+    "sameHashOnDoubleSerialization": true
+  }
+}
