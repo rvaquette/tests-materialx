@@ -1,30 +1,83 @@
-# Actions MaterialX PathTracer (audit 2026-06-02)
+# Actions MaterialX PathTracer (audit reel 2026-06-02)
 
 Perimetre audite:
-- parse / resolution des graphes MaterialX (surface, env, light)
-- emission GLSL des noeuds et graphes
-- coherence avec une exploitation pathtracer "vraie" (transport closure, PDF, sampling, robustesse)
+- D:/WebGL2/GLSL-PathTracer-JS/src/loaders/mtlx
+- verification complementaire de l'integration runtime dans:
+	- D:/WebGL2/GLSL-PathTracer-JS/src/core/pathtracer/loaders/sceneLoader.ts
 
-Constats principaux:
-- OK: le socle D0-D3 est coherent (parsing, typage, registres, extraction CPU, emission GLSL de base).
-- OK: emission GLSL surface graph existe et est exploitable pour des overrides materiau cibles.
-- Ecart 1 (majeur): les closures D4 dans src/loaders/mtlx/nodes restent des approximations vec3 (heuristiques), sans contrat physique complet eval/sample/pdf par closure.
-- Ecart 2 (majeur): la composition closure (mix, layer, scaled_layer, multiply) est encore majoritairement au niveau "couleur proxy", pas au niveau lobe/transport.
-- Ecart 3 (important): la collecte des bindings de graphes surface ne couvre que les inputs relies via nodegraph; les cas relies directement via nodename ne sont pas promus en overrides GLSL proceduraux.
-- Ecart 4 (important): le fallback resolveGLSL sur source non resolue produit un token commentaire, ce qui peut casser du GLSL genere selon le contexte d'injection.
-- Ecart 5 (moyen): les graphes env/light exposent emitGLSL, mais le chemin principal reste surtout CPU (extractConfig), donc couverture runtime GLSL partielle.
+Objectif:
+- verifier la coherence du code actuel avec un "vrai support MaterialX" pour un path tracer
+- lister uniquement les actions restantes, en separant ce qui est deja fait
 
-Actions requises (priorisees):
-- [x] 1. D4-closure-native: remplacer les sorties proxy vec3 des noeuds closure par un contrat structurel aligne pathtracer (eval, sample, pdf, flags reflect/transmit/emissive).
-- [x] 2. D4-composition-native: migrer mix/layer/scaled_layer/multiply vers une composition au niveau des lobes closures (pas seulement une interpolation de radiance).
-- [x] 3. Surface binding coverage: etendre la collecte de bindings pour inclure les chaines nodename directes (et pas uniquement nodegraph).
-- [x] 4. Robustesse emission: remplacer les placeholders unresolved par des fallbacks types (zeroOfType) + warning de validation explicite.
-- [x] 5. Env/light parity: definir une strategie explicite (CPU-only assumee ou GLSL runtime) et supprimer l'ambiguite entre extractConfig et emitGLSL.
-- [ ] 6. Validation ciblee: ajouter des scenes de non-regression pour chaque action ci-dessus (closures D4, composition, bindings directs, erreurs de resolution).
+## Verdict global
 
-Definition de "vrai support MaterialX pathtracer" (mise a jour):
-- les noeuds closure ne degradent plus vers un simple vec3;
-- toutes les compositions closure preservent eval/sample/pdf coherents;
-- le mapping des graphes surface couvre nodegraph et nodename;
-- les erreurs de resolution sont detectees et degradees de maniere typee, jamais via GLSL invalide;
-- une suite de scenes valide visuellement et numeriquement ces chemins.
+- Le support MaterialX est solide pour D0-D3 (parse, graphes, textures, bindings procedural GLSL).
+- Le support D4 est partiellement coherent: contrat closure present, mais implementation encore surtout heuristique/proxy vec3.
+- Le pipeline runtime exploite bien les bindings de textures MaterialX, mais pas encore un dispatch closure MaterialX complet au niveau transport Monte Carlo.
+
+## Constats verifies
+
+1) Closures D4: contrat present mais pas "physique complet"
+- Constate: `GlslClosureContract` existe (evalExpr/sampleExpr/pdfExpr/flagsExpr).
+- Limite: dans plusieurs noeuds, `evalExpr == sampleExpr`, `pdfExpr` reste constant ou simplifie (`1.0` ou mix heuristique), et la sortie GLSL reste un `vec3` proxy.
+- Conclusion: progression reelle, mais pas encore un support closure natif complet.
+
+2) Composition closure: mieux qu'avant, encore partielle
+- Constate: `mix`, `layer`, `scaled_layer`, `multiply` propagent des metadata closure (`pdfExpr`, `flagsExpr`).
+- Limite: la composition reste basee sur des expressions radiance/proxy (`vec3`) plutot que des lobes explicitement samples/evalues separables.
+- Conclusion: coherent avec un "socle D4", pas avec un "vrai D4 complet".
+
+3) Couverture bindings surface: corrigee
+- Constate: `collectSurfaceGraphBindings` gere a la fois `nodegraph` et `nodename`.
+- Conclusion: l'ancien ecart "nodename non couvert" est clos.
+
+4) Robustesse `resolveGLSL`: corrigee
+- Constate: source non resolue -> warning + fallback type (`zeroOfType`), pas de token commentaire GLSL invalide.
+- Conclusion: l'ancien ecart de robustesse est clos.
+
+5) Env/light strategy: explicite
+- Constate: env map supporte CPU + option GLSL; lights MaterialX restent CPU avec fallback explicite si mode GLSL demande.
+- Conclusion: plus d'ambiguite, mais parite GLSL light non atteinte.
+
+6) Integration runtime pathtracer: gap principal restant
+- Constate: le runtime consomme surtout des fonctions procedurales de textures (`collectSurfaceGraphBindings`) et des parametres materiau; pas de consommation directe du contrat closure MaterialX au niveau coeur path tracing.
+- Conclusion: principal ecart avec un "vrai support MaterialX pathtracer".
+
+## Actions requises (priorisees)
+
+- [ ] 1. Fermer le gap closure runtime (priorite critique)
+	- Integrer le contrat closure MaterialX dans le chemin d'evaluation/sampling/PDF du path tracer (pas uniquement dans l'emission locale des nodes).
+	- Definition de termine: les closures MaterialX pilotent effectivement les decisions de transport (eval/sample/pdf/flags) en runtime.
+
+- [ ] 2. Remplacer les heuristiques D4 par des implementations closure natives (priorite critique)
+	- Cibler d'abord: `conductor_*`, `dielectric_*`, `*_edf`, puis composition.
+	- Definition de termine: `evalExpr`, `sampleExpr`, `pdfExpr` ne sont plus des aliases du meme proxy vec3.
+
+- [ ] 3. Finaliser la composition closure au niveau lobe/transport (priorite haute)
+	- `mix/layer/scaled_layer/multiply` doivent combiner des strategies d'echantillonnage/PDF coherentes, pas uniquement des melanges de valeur.
+	- Definition de termine: conservation d'energie et PDF stables sur scenes de layering.
+
+- [ ] 4. Etendre les bindings proceduraux au-dela du sous-ensemble texture actuel (priorite haute)
+	- Elargir le mapping des inputs surface pris en charge et reduire les chemins "direct function" trop generiques.
+	- Definition de termine: couverture des principaux inputs MaterialX utilises en prod, avec comportement coherent par type d'input.
+
+- [ ] 5. Ajouter une campagne de non-regression ciblee D4 (priorite haute)
+	- Tests requis: energie, PDF > 0, absence de NaN/fireflies systematiques, coherence reflect/transmit/emissive.
+	- Inclure des scenes pour `nodegraph` et `nodename`.
+
+- [ ] 6. Completer la voie GLSL pour lights MaterialX (priorite moyenne)
+	- Soit implementer completement le chemin GLSL lightshader, soit verrouiller officiellement la strategie CPU-only.
+
+## Actions closes (ne plus rouvrir)
+
+- [x] Couverture `nodegraph` + `nodename` dans la collecte des bindings surface.
+- [x] Fallback type-safe dans `resolveGLSL` avec warnings explicites.
+- [x] Strategie env/light explicitee (fallback runtime visible).
+
+## Definition operationnelle de "vrai support MaterialX pathtracer"
+
+- les closures MaterialX ne sont plus de simples proxies vec3;
+- `eval/sample/pdf/flags` sont appliques en runtime dans la boucle Monte Carlo;
+- les compositions de closures conservent coherence energetique et PDF;
+- les bindings surface couvrent les cas `nodegraph` et `nodename` avec semantics correctes;
+- une suite de tests D4 valide visuellement et numeriquement le comportement.

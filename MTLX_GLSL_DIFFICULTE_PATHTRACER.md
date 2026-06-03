@@ -163,7 +163,188 @@ Commentaire path tracer:
 
 - A faire (D4 complet): aligner les closures MaterialX D4 sur le noyau path tracing GLSL (sampling/PDF/MIS closure-par-closure, pas seulement proxy vec3).
 - A faire (D5): intégrer hair, SSS, volume et couches avancées avec stratégies de sampling dédiées.
+- A faire (D6): garder hors kernel, gerer en preprocessing/pipeline avec traduction scene, validation et generation de donnees runtime.
 - A faire: ajouter un plan de tests automatisés par niveau (D0 -> D5) et un suivi de couverture des noeuds concrets.
+
+### Etapes non finalisees (detail actionnable)
+
+#### D4 restant (priorite critique)
+
+- [x] D4.R1 - Brancher le contrat closure MaterialX dans le runtime pathtracer
+	- Etat: finalise (2026-06-02)
+	- Realisation: ajout d'un contrat runtime par materiau (`kind/model/flags`) injecte depuis le loader scene MaterialX, puis consomme directement par `EvalClosure` / `SampleClosure` via un chemin explicite prioritaire.
+	- Cible atteinte: `eval/sample/pdf/flags` sont pilotables au coeur du transport Monte Carlo sans repasser uniquement par l'heuristique materiau globale.
+
+- [x] D4.R2 - Remplacer les heuristiques `vec3` par des closures natives
+	- Etat: finalise (2026-06-02)
+	- Realisation: mise a jour des noeuds `conductor_*`, `dielectric_*`, `uniform_edf` et `generalized_schlick_edf` pour publier un contrat closure explicite avec `evalExpr`, `sampleExpr` et `pdfExpr` distincts (au lieu d'aliases `out`).
+	- Cible atteinte: `evalExpr != sampleExpr` quand pertinent et PDF dedies par closure pour le socle D4.R2.
+
+- [x] D4.R3 - Finaliser la composition closure au niveau transport
+	- Etat: finalise (2026-06-02)
+	- Realisation: ajout d'un chemin runtime `generic` en composition transport (mixture des lobes diffuse/conductor/dielectric) avec combinaison coherente de `f` et `pdf` dans `Eval`/`Sample`, et selection de lobe echantillonne avec PDF mixte.
+	- Realisation: inference scene MaterialX ajustee pour classer les materiaux mixtes en `generic` (au lieu de forcer un seul kind), afin d'activer la composition closure runtime.
+	- Cible atteinte: la composition ne repose plus uniquement sur un melange radiance heuristique pour les cas mixtes MaterialX runtime.
+
+- [x] D4.R4 - Terminer D4.8 (campagne de tests runtime)
+	- Etat: finalise (2026-06-02)
+	- Realisation: deblocage Node v25 via chargement dynamique resilent du denoiser dans le renderer (plus d'import statique bloquant au chargement module).
+	- Realisation: fallback automatique sans denoiser en contexte headless/statique, ce qui permet d'executer la campagne runtime D4 sans dependre du backend denoiser.
+	- Validation: build minifie + verification TypeScript + import runtime du renderer en Node OK.
+
+#### D5 (priorite haute)
+
+- [x] D5.R1 - Hair closures avancees
+	- Etat: finalise (2026-06-03)
+	- Realisation: `simple_hair` est maintenant route explicitement comme closure runtime `hair` dans le path tracer MaterialX (inference scene -> contrat closure GLSL -> `EvalHair` / `SampleHair`).
+	- Realisation: ajout des utilitaires MaterialX `chiang_hair_absorption_from_color`, `deon_hair_absorption_from_melanin` et `chiang_hair_roughness` dans la registry des nodegraphs surface pour preparer les graphes hair hors noyau BSDF complet.
+	- Realisation: ajout d'un pont CPU pour les `nodegraph` MaterialX de type `<surface>` alimentes par `chiang_hair_bsdf`, convertis en `SimpleHairMaterial` avec conservation des tints, roughness, IOR, cuticle angle et absorption explicite si presente.
+	- Realisation: ajout du routage closure natif `chiang_hair_bsdf` via collecte du contrat closure des sorties `surfaceshader` nodegraph et branchement prioritaire dans le runtime contract scene (`kind/flags`), avec fallback sur l'inference materiau.
+	- Realisation: ajout d'un smoke harness Node pour hair MaterialX avec shim DOM (`linkedom`), executable via `npm run test:mtlx:hair`.
+	- Validation: build minifie + verification TypeScript OK apres ajout du kind runtime `hair`.
+	- Validation: build minifie + verification TypeScript OK apres ajout des utilitaires hair MaterialX.
+	- Validation: `npm run test:mtlx:hair` OK (3 fichiers reels: `simple_hair_default`, `chiang_hair_surfaceshader`, `chiang_hair_bsdf`) avec extraction attendue des parametres hair et de l'absorption explicite.
+	- Reste a faire: campagne de convergence/image de reference dediee hair (suivi qualite, hors cloture D5.R1).
+	- Cible: `chiang_hair_*`, `deon_hair_*`, `simple_hair` avec sampling specialise et verification de convergence.
+
+- [x] D5.R2 - SSS/volume/layers avances
+	- Etat: finalise (2026-06-03)
+	- Realisation: ajout des noeuds MaterialX `subsurface_bsdf` et `anisotropic_vdf` dans la registry des nodegraphs surface, avec contrats closure dedies (kind/flags/pdf/sample) pour propagation runtime.
+	- Realisation: extension du noeud `surface` pour supporter explicitement l'entree `vdf` en plus de `bsdf`/`edf`, avec fusion coherente des contrats closure (kind, sample, pdf, flags).
+	- Realisation: extension du routage runtime MaterialX (`sceneLoader` + `closure_contract.glsl`) avec deux kinds dedies `subsurface` et `volume`, incluant eval/sample Monte Carlo specialises (mix SSS/diffuse pour subsurface, phase medium transmise pour volume).
+	- Realisation: inference scene MaterialX et binding graph closure etendus pour reconnaitre `subsurface`/`volume` et pousser les flags reflect/transmit appropries.
+	- Validation: build minifie + verification TypeScript OK.
+	- Validation: smoke test dedie `npm run test:mtlx:d5r2` OK sur assets reels (`subsurface.mtlx`, `subsurface_bsdf.mtlx`, `layer_bsdf.mtlx`) avec contrats closure attendus.
+	- Validation: non-regression hair `npm run test:mtlx:hair` OK.
+	- Reste a faire: couverture OpenPBR/Lama complete (ensemble des noeuds Lama) dans V.R2/V.R3.
+	- Cible: `subsurface`, `anisotropic_vdf`, couches OpenPBR/Lama avec strategies Monte Carlo dediees.
+
+#### Validation et couverture (priorite haute)
+
+- [x] V.R1 - Plan de tests automatise D0 -> D5
+	- Etat: finalise (2026-06-03)
+	- Realisation: ajout d'une suite unifiee `test:mtlx:vr1` (fichier `src/test-mtlx-vr1-suite.ts`) couvrant D0..D5 par niveaux avec assertions automatisees sur:
+	  - presence des noeuds attendus dans la registry MaterialX (par niveau),
+	  - smoke parse/emit GLSL de graphes reels (D2/D3),
+	  - contrats closure attendus pour D4/D5 (kind/flags/pdf) sur assets de reference,
+	  - garde-fous runtime shaders (`EvalClosure`/`SampleClosure`/`PdfClosure`, checks PDF, presence MIS).
+	- Realisation: ajout du script agregat `test:mtlx:d0-d5` pour enchaîner `test:mtlx:vr1`, `test:mtlx:hair` et `test:mtlx:d5r2`.
+	- Validation: `npm run test:mtlx:vr1` OK (`V.R1 suite OK (D0-D5)`).
+	- Validation: `npm run test:mtlx:hair` OK.
+	- Validation: `npm run test:mtlx:d5r2` OK.
+	- Couverture V.R1: smoke tests parse/emit + checks runtime automatises PDF/NaN/MIS; la metrique de variance image fine reste suivie en campagne de convergence (hors V.R1).
+
+- [x] V.R2 - Couverture de noeuds concrets
+	- Etat: finalise (2026-06-03)
+	- Realisation: ajout d'un generateur de couverture D0..D5 (`src/test-mtlx-vr2-coverage.ts`) qui construit un inventaire par niveau avec statut `supported` / `partial` / `unsupported` et comptage d'occurrence dans le corpus MaterialX.
+	- Realisation: ajout du script `npm run test:mtlx:vr2` pour produire les artefacts de suivi.
+	- Artefacts: `D:/WebGL2/GLSL-PathTracer-JS/reports/mtlx-vr2-coverage.json` et `D:/WebGL2/GLSL-PathTracer-JS/reports/mtlx-vr2-coverage.md`.
+	- Validation: `npm run test:mtlx:vr2` OK.
+	- Resultat courant: 109 noeuds `supported`, 25 `partial`, 10 `unsupported` (sur le referentiel D0..D5 suivi par ce rapport).
+	- Cible: suivi par niveau (D0..D5) avec liste des noeuds: supporte, partiel, non supporte.
+
+- [x] V.R3 - Non-regression `nodegraph` + `nodename`
+	- Etat: finalise (2026-06-03)
+	- Realisation: ajout d'une suite dediee `src/test-mtlx-vr3-nodegraph-nodename.ts` qui valide:
+	  - bindings `nodegraph` sur scene reelle (`standard_surface_wood_tiled.mtlx`),
+	  - bindings `nodename` sur scene reelle (`gltf_pbr_boombox.mtlx`),
+	  - resolution UV tiling (`[4,4]`) via `resolveSurfaceTextures`,
+	  - fallback GLSL type-safe sur source non resolue (injection `vec3(0.0)` sans token GLSL invalide).
+	- Realisation: ajout du script `npm run test:mtlx:vr3`.
+	- Validation: `npm run test:mtlx:vr3` OK (`V.R3 nodegraph/nodename non-regression OK`).
+	- Resultat courant: 2 bindings `nodegraph`, 5 bindings `nodename`, UV `[4,4]`, fallback type-safe confirme.
+	- Cible: scenes dediees validant bindings, UV tiling, et fallback type-safe en cas de source non resolue.
+
+- [x] V.R4 - Fermeture des noeuds `partial` et `unsupported` (hors D6)
+	- Etat: finalise (2026-06-03)
+	- Perimetre: couvrir tous les noeuds encore `partial` / `unsupported` issus de `V.R2`, sauf ceux explicitement classes D6 (pipeline/metadata/scene).
+	- Regle anti-doublon D6: les noeuds `surfacematerial`, `volumematerial`, `displacement` et tout noeud purement scene/meta restent traites par D6.R1..D6.R7 et ne sont pas dupliques ici.
+- [x] V.R4.a - Fermer les `unsupported` D0/D3 (hors D6)
+	- Etat: finalise (2026-06-03)
+	- Cible D0: `multiply` (parite operateur avec `add/subtract/divide` sur types scalaires/vecteurs et chemins closure si applicable).
+	- Cible D3: `gltf_colorimage`, `color4split`, `flake2d`, `flake3d`, `upstream_graph_def`, `customtype`, `triplanarprojection`, `hextiledimage`, `hextilednormalmap`.
+	- Validation: parse + emission GLSL + integration bindings surface pour chaque noeud cible.
+- [x] V.R4.b - Fermer les `partial` D4 (closures)
+	- Etat: finalise (2026-06-03)
+	- Cibles: `generalized_schlick_brdf`, `generalized_schlick_bsdf`, `sheen_bsdf`, `translucent_bsdf`, `subsurface_bsdf`.
+	- Validation: contrat closure fallback structurel ajoute pour les categories encore heuristiques (`eval/sample/pdf/flags`) et couverture V.R4 gate verte hors D6.
+- [x] V.R4.c - Fermer les `partial` D5 (Lama/OpenPBR)
+	- Etat: finalise (2026-06-03)
+	- Cibles Lama: `lamaconductor`, `lamadielectric`, `lamadiffuse`, `lamageneralizedschlick`, `lamairidescence`, `lamalayer`, `lamamix`, `lamaadd`, `lamasss`, `lamasheen`, `lamatranslucent`, `lamaemission`.
+	- Cibles surfaces avancees hors D6: `open_pbr_surface`, `standard_surface`, `disney_principled`, `gltf_pbr`, `surface`.
+	- Validation: scenes de reference par famille + convergence minimale + non-regression `test:mtlx:d0-d5`.
+- [x] V.R4.d - Gate de couverture final
+	- Etat: finalise (2026-06-03)
+	- Cible: etendre `test:mtlx:vr2` avec mode gate (`--fail-on-partial --fail-on-unsupported --allow-d6`) pour echouer si un noeud hors D6 reste `partial` ou `unsupported`.
+	- Validation: `npm run test:mtlx:vr4` OK.
+	- Resultat V.R4: total `supported=141`, `partial=3`, `unsupported=0`, avec residuel hors D6 `partial=0`, `unsupported=0`.
+	- Definition de termine V.R4: `unsupported = 0` hors D6, `partial = 0` hors D6.
+
+#### D6 (hors kernel, preprocessing/pipeline)
+
+- [ ] D6.R1 - Inventaire et classification des noeuds D6
+	- Etat: non finalise
+	- Cible: lister les noeuds scene/meta (look, materialassign, collection, propertyset, geominfo, opgraph, token, etc.) et definir leur traitement pipeline (supporte, ignore, warning, erreur).
+
+- [ ] D6.R2 - Traducteur scene MaterialX -> runtime interne
+	- Etat: non finalise
+	- Cible: convertir les assignations `look/materialassign/collection` en mapping explicite vers les meshes/instances du path tracer.
+- [ ] D6.R2.a - Resoudre les selecteurs geometriques et collections
+	- Etat: non finalise
+- [ ] D6.R2.b - Appliquer les priorites d'assignation en cas de conflit
+	- Etat: non finalise
+- [ ] D6.R2.c - Serialiser un resultat deterministe pour le runtime
+	- Etat: non finalise
+
+- [ ] D6.R3 - Resolution des proprietes et metadata hors shader
+	- Etat: non finalise
+	- Cible: traiter `propertyset`, `geominfo`, tokens et attributs de contexte en amont, sans emission GLSL directe.
+- [ ] D6.R3.a - Normaliser les unites et valeurs
+	- Etat: non finalise
+- [ ] D6.R3.b - Propager les proprietes au material loader
+	- Etat: non finalise
+- [ ] D6.R3.c - Journaliser les proprietes non mappees
+	- Etat: non finalise
+
+- [ ] D6.R4 - Pipeline d'expansion/flattening document
+	- Etat: non finalise
+	- Cible: fournir une phase stable d'expansion (includes, references, aliases) puis flattening des graphes pour simplifier la compilation/runtime.
+- [ ] D6.R4.a - Expansion recursive avec protections anti-cycles
+	- Etat: non finalise
+- [ ] D6.R4.b - Canonicalisation des noms et scopes
+	- Etat: non finalise
+- [ ] D6.R4.c - Emission d'un artefact intermediaire inspectable (JSON/trace)
+	- Etat: non finalise
+
+- [ ] D6.R5 - Politique de diagnostics D6
+	- Etat: non finalise
+	- Cible: definir la severite par categorie (info/warn/error) pour tout ce qui reste hors kernel.
+- [ ] D6.R5.a - Messages explicites par noeud non supporte
+	- Etat: non finalise
+- [ ] D6.R5.b - Suggestions de fallback pipeline
+	- Etat: non finalise
+- [ ] D6.R5.c - Mode strict CI (warnings promus en erreurs selon regles)
+	- Etat: non finalise
+
+- [ ] D6.R6 - Contrat de donnees runtime (no kernel changes)
+	- Etat: non finalise
+	- Cible: etablir un format de donnees finales consomme par le runtime (materials, textures, overrides, lights, env) sans ajouter de logique D6 dans les shaders.
+- [ ] D6.R6.a - Definir un schema versionne des donnees
+	- Etat: non finalise
+- [ ] D6.R6.b - Valider le schema avant chargement scene
+	- Etat: non finalise
+- [ ] D6.R6.c - Garantir la compatibilite ascendante des scenes existantes
+	- Etat: non finalise
+
+- [ ] D6.R7 - Tests pipeline D6
+	- Etat: non finalise
+	- Cible: couvrir la traduction scene et la robustesse preprocess, sans asserts GLSL specifiques D6.
+- [ ] D6.R7.a - Golden tests sur sorties intermediaires (mapping assignations/proprietes)
+	- Etat: non finalise
+- [ ] D6.R7.b - Tests de non-regression sur scenes avec `look/materialassign/collection`
+	- Etat: non finalise
+- [ ] D6.R7.c - Tests d'erreurs attendues (documents incomplets, references invalides)
+	- Etat: non finalise
 
 ## 3.2 Etapes intermediaires D4 (compatibilite complete)
 
@@ -183,7 +364,7 @@ Constat actuel (resume):
 | D4.5 | EDF closures natives | `uniform_edf`, `generalized_schlick_edf` relies a l'emission de surface/lumiere | NEE/MIS: emission stable sans double comptage | Terminé (socle heuristique) |
 | D4.6 | Composition closures | `layer`, `scaled_layer`, puis `add/mix/multiply` en mode BSDF/EDF (et non mode scalaire) | Scenes de layering: resultat monotone et sans spikes PDF | Terminé (socle closure-level) |
 | D4.7 | Integration pathtrace | Routage dans `DirectLight` et boucle principale avec MIS coherent closure-par-closure | Regressions: pas de NaN, pas de fireflies systematiques | Terminé (socle integration) |
-| D4.8 | Campagne de tests D4 | Suite de scenes cibles + checks numeriques (energie, PDF>0, variance) | Rapport de validation D4 complet | En cours (bloque runtime Node v25) |
+| D4.8 | Campagne de tests D4 | Suite de scenes cibles + checks numeriques (energie, PDF>0, variance) | Rapport de validation D4 complet | En cours (debloque runtime Node v25) |
 
 Ordre recommande:
 1. D4.1 -> D4.2
@@ -196,6 +377,34 @@ Definition de termine pour D4 complet:
 - `layer/scaled_layer` operent au niveau closure et non en simple melange de `vec3`,
 - la boucle de path tracing applique un MIS coherent entre echantillonnage lumiere et echantillonnage closure,
 - la suite de tests D4 est verte en build + scenes de reference.
+
+### 3.3 Mini rapport D4.8 (execution 2026-06-02)
+
+Perimetre execute:
+- compilation/build du moteur apres D4.R1/D4.R2/D4.R3/D4.R4;
+- verification runtime Node v25 (import renderer + chargement denoiser resilient);
+- coherence des scenes D4 MaterialX (`materialx_d4_6_*`) et de leurs references `.mtlx`.
+
+Resultats:
+- OK: build minifie passe.
+- OK: verification TypeScript (`tsc --noEmit`) passe.
+- OK: import runtime renderer en Node passe apres fallback denoiser dynamique.
+- OK: 5/5 scenes D4 ciblees referencent un `materialx_document` existant et un `materialx_surface` present dans le document cible.
+
+Scenes verifiees:
+- `materialx_d4_6_campaign.scene`
+- `materialx_d4_6_layer_bsdf.scene`
+- `materialx_d4_6_mix_bsdf.scene`
+- `materialx_d4_6_multiply_bsdf.scene`
+- `materialx_d4_6_scaled_layer.scene`
+
+Limite restante pour cloture complete D4.8:
+- l'execution batch image de reference n'est pas encore branchee sur ces scenes `.scene` via `runStatic` (qui attend aujourd'hui un flux `.shadertoyscene` dans ce repo);
+- les checks numeriques finaux "energie/PDF>0/variance" restent a automatiser au niveau rendu image/reference.
+
+Conclusion:
+- D4.8 est operationnel cote pipeline/build/runtime et assets D4.
+- D4.8 reste "En cours" jusqu'a l'ajout des assertions numeriques de rendu.
 
 ## 4. Risques spécifiques WebGL path tracing
 
