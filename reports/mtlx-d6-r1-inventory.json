@@ -1,0 +1,203 @@
+{
+  "generatedAt": "2026-06-03T21:10:33.545Z",
+  "corpusRoot": "D:/WebGL2/tests-materialx/materialx/Materials",
+  "totals": {
+    "supporte": 14,
+    "ignore": 3,
+    "warning": 5,
+    "erreur": 5,
+    "presentNodes": 24
+  },
+  "entries": [
+    {
+      "node": "look",
+      "status": "supporte",
+      "rationale": "Mapping des looks vers les assignations runtime.",
+      "count": 7,
+      "present": true
+    },
+    {
+      "node": "materialassign",
+      "status": "supporte",
+      "rationale": "Assignation de materiaux aux geometries/collections.",
+      "count": 26,
+      "present": true
+    },
+    {
+      "node": "collection",
+      "status": "supporte",
+      "rationale": "Selection geometrique a resoudre avant shader.",
+      "count": 3,
+      "present": true
+    },
+    {
+      "node": "propertyset",
+      "status": "supporte",
+      "rationale": "Conteneur de proprietes pipeline/runtime.",
+      "count": 0,
+      "present": false
+    },
+    {
+      "node": "propertysetassign",
+      "status": "supporte",
+      "rationale": "Application de propertyset sur cibles de scene.",
+      "count": 0,
+      "present": false
+    },
+    {
+      "node": "geominfo",
+      "status": "supporte",
+      "rationale": "Metadonnees geometriques pour preprocessing.",
+      "count": 2,
+      "present": true
+    },
+    {
+      "node": "geompropdef",
+      "status": "supporte",
+      "rationale": "Definition de proprietes geometriques exploitees hors kernel.",
+      "count": 0,
+      "present": false
+    },
+    {
+      "node": "geompropvalue",
+      "status": "supporte",
+      "rationale": "Valeurs de proprietes geometriques a propager dans le preprocessing runtime.",
+      "count": 8,
+      "present": true
+    },
+    {
+      "node": "geompropvalueuniform",
+      "status": "supporte",
+      "rationale": "Variante uniforme des valeurs de geomprop pour normalisation pipeline.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "geomprop",
+      "status": "supporte",
+      "rationale": "Reference de propriete geometrique a resoudre avant execution shader.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "geomattr",
+      "status": "supporte",
+      "rationale": "Attribut geometrique a convertir en donnees runtime de scene.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "geomattrvalue",
+      "status": "supporte",
+      "rationale": "Valeur explicite d attribut geometrique a integrer en preprocessing.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "geomcolor",
+      "status": "warning",
+      "rationale": "Metadonnee de couleur geometrique: warning si non mappee vers une propriete runtime connue.",
+      "count": 3,
+      "present": true
+    },
+    {
+      "node": "token",
+      "status": "warning",
+      "rationale": "Doit etre resolu au preprocessing; warning si non resolu.",
+      "count": 16,
+      "present": true
+    },
+    {
+      "node": "token_image",
+      "status": "ignore",
+      "rationale": "Noeud texture D2 hors perimetre D6; exclu du suivi scene/meta D6.",
+      "count": 2,
+      "present": true
+    },
+    {
+      "node": "opgraph",
+      "status": "ignore",
+      "rationale": "Noeud editorial/non runtime pour ce path tracer.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "backdrop",
+      "status": "ignore",
+      "rationale": "Element UI/editor, sans impact rendu.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "surfacematerial",
+      "status": "supporte",
+      "rationale": "Contrat pipeline de liaison vers surfaceshader.",
+      "count": 161,
+      "present": true
+    },
+    {
+      "node": "volumematerial",
+      "status": "supporte",
+      "rationale": "Contrat pipeline de liaison vers volumeshader.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "displacement",
+      "status": "warning",
+      "rationale": "Support partiel; fallback/warning selon capacites runtime.",
+      "count": 5,
+      "present": true
+    },
+    {
+      "node": "shader",
+      "status": "warning",
+      "rationale": "Legacy/interop: journaliser et router vers fallback.",
+      "count": 2,
+      "present": true
+    },
+    {
+      "node": "material",
+      "status": "warning",
+      "rationale": "Legacy/interop: normaliser vers surfacematerial.",
+      "count": 3,
+      "present": true
+    },
+    {
+      "node": "foo_surface",
+      "status": "erreur",
+      "rationale": "Noeud legacy de test non supporte en production.",
+      "count": 2,
+      "present": true
+    },
+    {
+      "node": "myshader",
+      "status": "erreur",
+      "rationale": "Noeud custom de test sans mapping connu.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "mymaterial",
+      "status": "erreur",
+      "rationale": "Noeud custom de test sans mapping connu.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "mybsdf",
+      "status": "erreur",
+      "rationale": "Noeud custom de test sans mapping connu.",
+      "count": 2,
+      "present": true
+    },
+    {
+      "node": "myedf",
+      "status": "erreur",
+      "rationale": "Noeud custom de test sans mapping connu.",
+      "count": 1,
+      "present": true
+    }
+  ],
+  "unknownCandidates": []
+}

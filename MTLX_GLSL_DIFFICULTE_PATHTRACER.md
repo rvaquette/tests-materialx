@@ -282,9 +282,19 @@ Commentaire path tracer:
 
 #### D6 (hors kernel, preprocessing/pipeline)
 
-- [ ] D6.R1 - Inventaire et classification des noeuds D6
-	- Etat: non finalise
+- [x] D6.R1 - Inventaire et classification des noeuds D6
+	- Etat: finalise (2026-06-03)
+	- Realisation: ajout d'un inventaire automatique D6 (`src/test-d6-r1-inventory.ts`) qui scanne le corpus MaterialX et classe les noeuds scene/meta en `supporte` / `ignore` / `warning` / `erreur`.
+	- Realisation: ajout du script `npm run test:d6-r1`.
+	- Artefacts: `reports/mtlx-d6-r1-inventory.json` et `reports/mtlx-d6-r1-inventory.md`.
+	- Validation: `npm run test:d6-r1` OK.
+	- Resultat courant: 9 noeuds classes `supporte`, 2 `ignore`, 4 `warning`, 5 `erreur`; 17 noeuds D6 effectivement presents dans le corpus.
+	- Resultat courant: candidats non classes detectes pour tri D6.R1.b (ex: `geompropvalue`, `geomcolor`, `geomattr`, `geomprop`).
 	- Cible: lister les noeuds scene/meta (look, materialassign, collection, propertyset, geominfo, opgraph, token, etc.) et definir leur traitement pipeline (supporte, ignore, warning, erreur).
+
+- [ ] D6.R1.b - Completer la classification des candidats residuels
+	- Etat: non finalise
+	- Cible: classifier les candidats detectes automatiquement (`geompropvalue`, `geomcolor`, `geomattr`, `geomattrvalue`, `geomprop`, `geompropvalueuniform`) puis rerunner la validation D6.R1 pour obtenir `unknownCandidates=0`.
 
 - [ ] D6.R2 - Traducteur scene MaterialX -> runtime interne
 	- Etat: non finalise
