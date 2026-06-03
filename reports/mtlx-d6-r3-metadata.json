@@ -1,0 +1,69 @@
+{
+  "generatedAt": "2026-06-03T21:21:12.706Z",
+  "schema": "mtlx-d6-r3-runtime-metadata-v1",
+  "fixtures": [
+    {
+      "file": "materialx/Materials/TestSuite/stdlib/texture/udim.mtlx",
+      "activeLook": null,
+      "materials": 1,
+      "mappedProperties": 1,
+      "unassignedProperties": 0,
+      "diagnostics": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      }
+    },
+    {
+      "file": "materialx/Materials/TestSuite/stdlib/upgrade/syntax_1_36.mtlx",
+      "activeLook": null,
+      "materials": 0,
+      "mappedProperties": 0,
+      "unassignedProperties": 1,
+      "diagnostics": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      }
+    },
+    {
+      "file": "materialx/Materials/TestSuite/stdlib/texture/token_graph_material.mtlx",
+      "activeLook": null,
+      "materials": 0,
+      "mappedProperties": 0,
+      "unassignedProperties": 1,
+      "diagnostics": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    {
+      "file": "materialx/Materials/Examples/StandardSurface/standard_surface_chess_set.mtlx",
+      "activeLook": "L_ChessSet",
+      "materials": 0,
+      "mappedProperties": 0,
+      "unassignedProperties": 0,
+      "diagnostics": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      }
+    }
+  ],
+  "totals": {
+    "files": 4,
+    "materials": 1,
+    "mappedProperties": 1,
+    "unassignedProperties": 2,
+    "diagnostics": {
+      "error": 0,
+      "warning": 1,
+      "info": 2
+    }
+  },
+  "deterministicSerialization": {
+    "fixture": "materialx/Materials/TestSuite/stdlib/texture/token_graph_material.mtlx",
+    "sameHashOnDoubleSerialization": true
+  }
+}

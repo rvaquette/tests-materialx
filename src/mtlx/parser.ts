@@ -284,11 +284,11 @@ function parsePropertySet(raw: RawObj): MtlxPropertySet {
 }
 
 function parseGeomProp(raw: RawObj): MtlxGeomProp {
-  const known = ['name', 'type', 'geomprop', 'value'];
+  const known = ['name', 'type', 'geomprop', 'attrname', 'value'];
   return {
     name: attrStr(raw, 'name'),
     type: attrStr(raw, 'type'),
-    geomprop: attr(raw, 'geomprop'),
+    geomprop: attr(raw, 'geomprop') ?? attr(raw, 'attrname'),
     value: attr(raw, 'value'),
     extra: extraAttrs(raw, known),
   };
@@ -296,10 +296,15 @@ function parseGeomProp(raw: RawObj): MtlxGeomProp {
 
 function parseGeomInfo(raw: RawObj): MtlxGeomInfo {
   const known = ['name', 'geom'];
+  const geomprops = [
+    ...childArray(raw, 'geomprop').map(parseGeomProp),
+    ...childArray(raw, 'geomattr').map(parseGeomProp),
+    ...childArray(raw, 'geomattrvalue').map(parseGeomProp),
+  ];
   return {
     name: attrStr(raw, 'name'),
     geom: attr(raw, 'geom'),
-    geomprops: childArray(raw, 'geomprop').map(parseGeomProp),
+    geomprops,
     extra: extraAttrs(raw, known),
   };
 }

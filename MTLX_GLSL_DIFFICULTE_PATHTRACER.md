@@ -318,15 +318,24 @@ Commentaire path tracer:
 	- Etat: finalise (2026-06-03)
 	- Realisation: serialisation stable `serializeRuntimeSceneAssignment` avec tri explicite des looks/cles/traces et check de stabilite sur double serialisation.
 
-- [ ] D6.R3 - Resolution des proprietes et metadata hors shader
-	- Etat: non finalise
+- [x] D6.R3 - Resolution des proprietes et metadata hors shader
+	- Etat: finalise (2026-06-03)
+	- Realisation: ajout du resoldeur D6.R3 `src/mtlx/metadataResolver.ts` pour traiter `propertyset`, `geominfo`, tokens top-level et assignations de proprietes hors shader.
+	- Realisation: extension du parser `src/mtlx/parser.ts` pour capter `geomattr` / `geomattrvalue` dans `geominfo`.
+	- Realisation: ajout du runner `src/test-d6-r3-metadata.ts` et du script `npm run test:d6-r3`.
+	- Artefacts: `reports/mtlx-d6-r3-metadata.json` et `reports/mtlx-d6-r3-metadata.md`.
+	- Validation: `npm run test:d6-r3` OK, `npm run build` OK.
+	- Resultat courant: 4 fixtures valides, 1 propriete mappee, 2 proprietes non mappees journalisees, 0 erreur, 1 warning, 2 infos, serialisation deterministe verifiee.
 	- Cible: traiter `propertyset`, `geominfo`, tokens et attributs de contexte en amont, sans emission GLSL directe.
-- [ ] D6.R3.a - Normaliser les unites et valeurs
-	- Etat: non finalise
-- [ ] D6.R3.b - Propager les proprietes au material loader
-	- Etat: non finalise
-- [ ] D6.R3.c - Journaliser les proprietes non mappees
-	- Etat: non finalise
+- [x] D6.R3.a - Normaliser les unites et valeurs
+	- Etat: finalise (2026-06-03)
+	- Realisation: normalisation des unites `angle` (degre -> radian) et `distance` (vers metre) quand valeurs numeriques disponibles.
+- [x] D6.R3.b - Propager les proprietes au material loader
+	- Etat: finalise (2026-06-03)
+	- Realisation: propagation vers metadonnees material runtime via mapping mesh->material du look actif D6.R2, avec fallback deterministic sur materiau unique si aucun look actif.
+- [x] D6.R3.c - Journaliser les proprietes non mappees
+	- Etat: finalise (2026-06-03)
+	- Realisation: sorties explicites `unassignedProperties` + diagnostics pour tokens non resolus, collections manquantes, ambiguite d'assignation et proprietes sans cible mesh/material.
 
 - [ ] D6.R4 - Pipeline d'expansion/flattening document
 	- Etat: non finalise

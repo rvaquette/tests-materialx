@@ -9,7 +9,8 @@
     "test:ts": "npx tsx src/test-mtlx.ts",
     "test:d1-targets": "npx tsx src/test-d1-targets.ts",
     "test:d6-r1": "npx tsx src/test-d6-r1-inventory.ts",
-    "test:d6-r2": "npx tsx src/test-d6-r2-translator.ts"
+    "test:d6-r2": "npx tsx src/test-d6-r2-translator.ts",
+    "test:d6-r3": "npx tsx src/test-d6-r3-metadata.ts"
   },
   "devDependencies": {
     "@types/node": "^22.19.19",
