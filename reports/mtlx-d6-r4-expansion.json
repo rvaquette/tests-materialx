@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-06-04T09:53:14.701Z",
+  "schema": "mtlx-d6-r4-expanded-v1",
+  "fixtures": [
+    {
+      "file": "materialx/Materials/TestSuite/libraries/metal/brass_wire_mesh.mtlx",
+      "documents": 2,
+      "includesRequested": 1,
+      "includesResolved": 1,
+      "includesMissing": 0,
+      "includeCycles": 0,
+      "references": {
+        "total": 16,
+        "unresolved": 7
+      },
+      "diagnostics": {
+        "error": 0,
+        "warning": 7,
+        "info": 0
+      }
+    },
+    {
+      "file": "materialx/Materials/TestSuite/stdlib/geometric/look_assignment_order.mtlx",
+      "documents": 1,
+      "includesRequested": 0,
+      "includesResolved": 0,
+      "includesMissing": 0,
+      "includeCycles": 0,
+      "references": {
+        "total": 2,
+        "unresolved": 0
+      },
+      "diagnostics": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      }
+    },
+    {
+      "file": "materialx/Materials/Examples/StandardSurface/standard_surface_chess_set.mtlx",
+      "documents": 1,
+      "includesRequested": 0,
+      "includesResolved": 0,
+      "includesMissing": 0,
+      "includeCycles": 0,
+      "references": {
+        "total": 114,
+        "unresolved": 0
+      },
+      "diagnostics": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      }
+    }
+  ],
+  "totals": {
+    "files": 3,
+    "documents": 4,
+    "includesRequested": 1,
+    "includesResolved": 1,
+    "includesMissing": 0,
+    "includeCycles": 0,
+    "unresolvedReferences": 7,
+    "diagnostics": {
+      "error": 0,
+      "warning": 7,
+      "info": 0
+    }
+  },
+  "deterministicSerialization": {
+    "fixture": "materialx/Materials/TestSuite/libraries/metal/brass_wire_mesh.mtlx",
+    "sameHashOnDoubleSerialization": true
+  }
+}

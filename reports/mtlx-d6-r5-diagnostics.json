@@ -1,0 +1,381 @@
+{
+  "generatedAt": "2026-06-04T10:00:42.479Z",
+  "schema": "mtlx-d6-r5-diagnostics-v1",
+  "corpusRoot": "D:/WebGL2/tests-materialx/materialx/Materials",
+  "strict": {
+    "enabled": true,
+    "promoteAllWarnings": false,
+    "promoteWarningNodes": [
+      "displacement",
+      "geomcolor",
+      "material",
+      "shader",
+      "token"
+    ],
+    "promotedWarnings": 5,
+    "blockingErrors": 10,
+    "ciPass": false
+  },
+  "totals": {
+    "rules": 27,
+    "presentNodes": 24,
+    "diagnostics": {
+      "info": 0,
+      "warning": 5,
+      "error": 5
+    },
+    "effectiveDiagnostics": {
+      "info": 0,
+      "warning": 0,
+      "error": 10
+    }
+  },
+  "coverage": [
+    {
+      "node": "backdrop",
+      "severity": "info",
+      "category": "ignore",
+      "message": "backdrop is editorial and ignored by runtime.",
+      "fallback": "No fallback required. Ignore safely in preprocessing.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "collection",
+      "severity": "info",
+      "category": "supported",
+      "message": "collection selectors are expanded before runtime (D6.R2).",
+      "fallback": "No fallback required. Expand wildcard selectors recursively.",
+      "count": 3,
+      "present": true
+    },
+    {
+      "node": "displacement",
+      "severity": "warning",
+      "category": "warning",
+      "message": "displacement runtime support is partial in current pipeline.",
+      "fallback": "Fallback to normal/bump approximation or emit explicit no-displacement policy.",
+      "count": 5,
+      "present": true
+    },
+    {
+      "node": "foo_surface",
+      "severity": "error",
+      "category": "unsupported",
+      "message": "Unsupported legacy test node foo_surface detected.",
+      "fallback": "Replace with supported standard_surface/open_pbr_surface equivalent.",
+      "count": 2,
+      "present": true
+    },
+    {
+      "node": "geomattr",
+      "severity": "info",
+      "category": "supported",
+      "message": "geomattr is treated as metadata attribute input.",
+      "fallback": "No fallback required. Map to runtime material metadata.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "geomattrvalue",
+      "severity": "info",
+      "category": "supported",
+      "message": "geomattrvalue is treated as metadata attribute value input.",
+      "fallback": "No fallback required. Map to runtime material metadata.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "geomcolor",
+      "severity": "warning",
+      "category": "warning",
+      "message": "geomcolor is not mapped by default to a runtime material key.",
+      "fallback": "Map geomcolor to an explicit material metadata property or ignore intentionally.",
+      "count": 3,
+      "present": true
+    },
+    {
+      "node": "geominfo",
+      "severity": "info",
+      "category": "supported",
+      "message": "geominfo is supported in metadata preprocessing (D6.R3).",
+      "fallback": "No fallback required. Preserve normalized metadata values.",
+      "count": 2,
+      "present": true
+    },
+    {
+      "node": "geomprop",
+      "severity": "info",
+      "category": "supported",
+      "message": "geomprop references are resolved during preprocessing.",
+      "fallback": "No fallback required. Keep references in metadata pipeline.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "geompropdef",
+      "severity": "info",
+      "category": "supported",
+      "message": "geompropdef is handled as preprocessing metadata declaration.",
+      "fallback": "No fallback required. Keep declaration for downstream mapping.",
+      "count": 0,
+      "present": false
+    },
+    {
+      "node": "geompropvalue",
+      "severity": "info",
+      "category": "supported",
+      "message": "geompropvalue is propagated through metadata resolver (D6.R3).",
+      "fallback": "No fallback required. Resolve against active look mapping.",
+      "count": 8,
+      "present": true
+    },
+    {
+      "node": "geompropvalueuniform",
+      "severity": "info",
+      "category": "supported",
+      "message": "geompropvalueuniform is normalized before runtime ingestion.",
+      "fallback": "No fallback required. Keep normalized value in metadata package.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "look",
+      "severity": "info",
+      "category": "supported",
+      "message": "Look is handled by scene translation (D6.R2).",
+      "fallback": "No fallback required. Keep translated runtime assignments.",
+      "count": 7,
+      "present": true
+    },
+    {
+      "node": "material",
+      "severity": "warning",
+      "category": "warning",
+      "message": "legacy material nodes need normalization toward surfacematerial.",
+      "fallback": "Normalize legacy material references to surfacematerial during preprocessing.",
+      "count": 3,
+      "present": true
+    },
+    {
+      "node": "materialassign",
+      "severity": "info",
+      "category": "supported",
+      "message": "materialassign is resolved to mesh->material mappings (D6.R2).",
+      "fallback": "No fallback required. Use deterministic assignment order.",
+      "count": 26,
+      "present": true
+    },
+    {
+      "node": "mybsdf",
+      "severity": "error",
+      "category": "unsupported",
+      "message": "Unsupported custom test node mybsdf detected.",
+      "fallback": "Replace with supported BSDF node and migrate graph connections.",
+      "count": 2,
+      "present": true
+    },
+    {
+      "node": "myedf",
+      "severity": "error",
+      "category": "unsupported",
+      "message": "Unsupported custom test node myedf detected.",
+      "fallback": "Replace with supported EDF node and migrate graph connections.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "mymaterial",
+      "severity": "error",
+      "category": "unsupported",
+      "message": "Unsupported custom test node mymaterial detected.",
+      "fallback": "Replace with supported material node and provide migration mapping.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "myshader",
+      "severity": "error",
+      "category": "unsupported",
+      "message": "Unsupported custom test node myshader detected.",
+      "fallback": "Replace with supported shader node and provide migration mapping.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "opgraph",
+      "severity": "info",
+      "category": "ignore",
+      "message": "opgraph is editorial and intentionally ignored in runtime.",
+      "fallback": "Keep out of runtime contract and shader paths.",
+      "count": 1,
+      "present": true
+    },
+    {
+      "node": "propertyset",
+      "severity": "info",
+      "category": "supported",
+      "message": "propertyset is consumed by metadata resolution (D6.R3).",
+      "fallback": "No fallback required. Keep property mapping at preprocessing stage.",
+      "count": 0,
+      "present": false
+    },
+    {
+      "node": "propertysetassign",
+      "severity": "info",
+      "category": "supported",
+      "message": "propertysetassign is consumed by metadata resolution (D6.R3).",
+      "fallback": "No fallback required. Resolve to material metadata package.",
+      "count": 0,
+      "present": false
+    },
+    {
+      "node": "shader",
+      "severity": "warning",
+      "category": "warning",
+      "message": "legacy shader nodes need normalization toward surfacematerial.",
+      "fallback": "Normalize legacy shader references to surfacematerial during preprocessing.",
+      "count": 2,
+      "present": true
+    },
+    {
+      "node": "surfacematerial",
+      "severity": "info",
+      "category": "supported",
+      "message": "surfacematerial is part of runtime linkage contract.",
+      "fallback": "No fallback required. Preserve material linkage.",
+      "count": 161,
+      "present": true
+    },
+    {
+      "node": "token",
+      "severity": "warning",
+      "category": "warning",
+      "message": "token requires preprocessing substitution before runtime load.",
+      "fallback": "Resolve token values at preprocess stage or provide deterministic defaults.",
+      "count": 16,
+      "present": true
+    },
+    {
+      "node": "token_image",
+      "severity": "info",
+      "category": "ignore",
+      "message": "token_image is out of D6 scene/meta scope.",
+      "fallback": "Handle as D2 texture concern, not as D6 diagnostic failure.",
+      "count": 2,
+      "present": true
+    },
+    {
+      "node": "volumematerial",
+      "severity": "info",
+      "category": "supported",
+      "message": "volumematerial is part of runtime linkage contract.",
+      "fallback": "No fallback required. Preserve material linkage.",
+      "count": 1,
+      "present": true
+    }
+  ],
+  "diagnostics": [
+    {
+      "severity": "warning",
+      "effectiveSeverity": "error",
+      "code": "D6R5-WARNING-001",
+      "node": "displacement",
+      "count": 5,
+      "message": "displacement runtime support is partial in current pipeline.",
+      "fallback": "Fallback to normal/bump approximation or emit explicit no-displacement policy.",
+      "promotedByStrict": true
+    },
+    {
+      "severity": "error",
+      "effectiveSeverity": "error",
+      "code": "D6R5-UNSUPPORTED-001",
+      "node": "foo_surface",
+      "count": 2,
+      "message": "Unsupported legacy test node foo_surface detected.",
+      "fallback": "Replace with supported standard_surface/open_pbr_surface equivalent.",
+      "promotedByStrict": false
+    },
+    {
+      "severity": "warning",
+      "effectiveSeverity": "error",
+      "code": "D6R5-WARNING-001",
+      "node": "geomcolor",
+      "count": 3,
+      "message": "geomcolor is not mapped by default to a runtime material key.",
+      "fallback": "Map geomcolor to an explicit material metadata property or ignore intentionally.",
+      "promotedByStrict": true
+    },
+    {
+      "severity": "warning",
+      "effectiveSeverity": "error",
+      "code": "D6R5-WARNING-001",
+      "node": "material",
+      "count": 3,
+      "message": "legacy material nodes need normalization toward surfacematerial.",
+      "fallback": "Normalize legacy material references to surfacematerial during preprocessing.",
+      "promotedByStrict": true
+    },
+    {
+      "severity": "error",
+      "effectiveSeverity": "error",
+      "code": "D6R5-UNSUPPORTED-001",
+      "node": "mybsdf",
+      "count": 2,
+      "message": "Unsupported custom test node mybsdf detected.",
+      "fallback": "Replace with supported BSDF node and migrate graph connections.",
+      "promotedByStrict": false
+    },
+    {
+      "severity": "error",
+      "effectiveSeverity": "error",
+      "code": "D6R5-UNSUPPORTED-001",
+      "node": "myedf",
+      "count": 1,
+      "message": "Unsupported custom test node myedf detected.",
+      "fallback": "Replace with supported EDF node and migrate graph connections.",
+      "promotedByStrict": false
+    },
+    {
+      "severity": "error",
+      "effectiveSeverity": "error",
+      "code": "D6R5-UNSUPPORTED-001",
+      "node": "mymaterial",
+      "count": 1,
+      "message": "Unsupported custom test node mymaterial detected.",
+      "fallback": "Replace with supported material node and provide migration mapping.",
+      "promotedByStrict": false
+    },
+    {
+      "severity": "error",
+      "effectiveSeverity": "error",
+      "code": "D6R5-UNSUPPORTED-001",
+      "node": "myshader",
+      "count": 1,
+      "message": "Unsupported custom test node myshader detected.",
+      "fallback": "Replace with supported shader node and provide migration mapping.",
+      "promotedByStrict": false
+    },
+    {
+      "severity": "warning",
+      "effectiveSeverity": "error",
+      "code": "D6R5-WARNING-001",
+      "node": "shader",
+      "count": 2,
+      "message": "legacy shader nodes need normalization toward surfacematerial.",
+      "fallback": "Normalize legacy shader references to surfacematerial during preprocessing.",
+      "promotedByStrict": true
+    },
+    {
+      "severity": "warning",
+      "effectiveSeverity": "error",
+      "code": "D6R5-WARNING-001",
+      "node": "token",
+      "count": 16,
+      "message": "token requires preprocessing substitution before runtime load.",
+      "fallback": "Resolve token values at preprocess stage or provide deterministic defaults.",
+      "promotedByStrict": true
+    }
+  ],
+  "unknownCandidates": []
+}

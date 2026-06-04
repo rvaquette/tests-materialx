@@ -337,25 +337,41 @@ Commentaire path tracer:
 	- Etat: finalise (2026-06-03)
 	- Realisation: sorties explicites `unassignedProperties` + diagnostics pour tokens non resolus, collections manquantes, ambiguite d'assignation et proprietes sans cible mesh/material.
 
-- [ ] D6.R4 - Pipeline d'expansion/flattening document
-	- Etat: non finalise
+- [x] D6.R4 - Pipeline d'expansion/flattening document
+	- Etat: finalise (2026-06-04)
+	- Realisation: ajout du pipeline D6.R4 `src/mtlx/documentExpander.ts` pour expansion recursive des documents (`xi:include`), resolution de references (`nodename`, `nodegraph`, `interfacename`) et flattening canonicalise des scopes (`scope::name`) pour looks/nodegraphs.
+	- Realisation: ajout du runner `src/test-d6-r4-expansion.ts` et du script `npm run test:d6-r4`.
+	- Artefacts: `reports/mtlx-d6-r4-expansion.json` et `reports/mtlx-d6-r4-expansion.md`.
+	- Validation: `npm run test:d6-r4` OK, `npm run build` OK.
+	- Resultat courant: 3 fixtures, 4 documents expandus, `includesRequested=1`, `includesResolved=1`, `includesMissing=0`, `includeCycles=0`, serialisation deterministe verifiee.
 	- Cible: fournir une phase stable d'expansion (includes, references, aliases) puis flattening des graphes pour simplifier la compilation/runtime.
-- [ ] D6.R4.a - Expansion recursive avec protections anti-cycles
-	- Etat: non finalise
-- [ ] D6.R4.b - Canonicalisation des noms et scopes
-	- Etat: non finalise
-- [ ] D6.R4.c - Emission d'un artefact intermediaire inspectable (JSON/trace)
-	- Etat: non finalise
+- [x] D6.R4.a - Expansion recursive avec protections anti-cycles
+	- Etat: finalise (2026-06-04)
+	- Realisation: parcours DFS des includes avec cache, detection de cycle de pile (`D6R4-INC-001`) et diagnostics explicites pour references de fichiers manquantes (`D6R4-INC-002`) ou parse invalide (`D6R4-INC-003`).
+- [x] D6.R4.b - Canonicalisation des noms et scopes
+	- Etat: finalise (2026-06-04)
+	- Realisation: canonicalisation stable `scope::name` pour looks/nodegraphs et normalisation des scopes derives du chemin relatif de document.
+- [x] D6.R4.c - Emission d'un artefact intermediaire inspectable (JSON/trace)
+	- Etat: finalise (2026-06-04)
+	- Realisation: emission du rapport inspectable (totaux expansion/includes/references, diagnostics, vue flattenee) en JSON + markdown avec check de determinisme par double serialisation.
 
-- [ ] D6.R5 - Politique de diagnostics D6
-	- Etat: non finalise
+- [x] D6.R5 - Politique de diagnostics D6
+	- Etat: finalise (2026-06-04)
+	- Realisation: ajout du runner `src/test-d6-r5-diagnostics.ts` avec politique unifiee par noeud D6 (severity/categorie/message/fallback), calcul de couverture corpus et emission des diagnostics effectifs.
+	- Realisation: ajout des scripts `npm run test:d6-r5` (mode normal) et `npm run test:d6-r5:strict` (mode CI strict).
+	- Artefacts: `reports/mtlx-d6-r5-diagnostics.json` et `reports/mtlx-d6-r5-diagnostics.md`.
+	- Validation: `npm run test:d6-r5` OK, `npm run test:d6-r5:strict` (comportement attendu: echec CI tant que des diagnostics erreurs effectifs subsistent), `npm run build` OK.
+	- Resultat courant: mode normal `warning=5`, `error=5`; mode strict `promotedWarnings=5`, `blockingErrors=10`, `ciPass=false`.
 	- Cible: definir la severite par categorie (info/warn/error) pour tout ce qui reste hors kernel.
-- [ ] D6.R5.a - Messages explicites par noeud non supporte
-	- Etat: non finalise
-- [ ] D6.R5.b - Suggestions de fallback pipeline
-	- Etat: non finalise
-- [ ] D6.R5.c - Mode strict CI (warnings promus en erreurs selon regles)
-	- Etat: non finalise
+- [x] D6.R5.a - Messages explicites par noeud non supporte
+	- Etat: finalise (2026-06-04)
+	- Realisation: emission explicite des diagnostics `D6R5-UNSUPPORTED-001` pour chaque noeud unsupported present (`foo_surface`, `myshader`, `mymaterial`, `mybsdf`, `myedf`) avec comptage d'occurrences.
+- [x] D6.R5.b - Suggestions de fallback pipeline
+	- Etat: finalise (2026-06-04)
+	- Realisation: chaque diagnostic warning/error embarque une suggestion de fallback operationnelle (normalisation legacy, approximation displacement, substitution token, migration vers noeuds supportes).
+- [x] D6.R5.c - Mode strict CI (warnings promus en erreurs selon regles)
+	- Etat: finalise (2026-06-04)
+	- Realisation: promotion configurable warning->error via `--strict` et liste des noeuds promus (`token`, `geomcolor`, `displacement`, `shader`, `material`) avec verdict `ciPass` dans le rapport.
 
 - [ ] D6.R6 - Contrat de donnees runtime (no kernel changes)
 	- Etat: non finalise
