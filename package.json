@@ -13,7 +13,8 @@
     "test:d6-r3": "npx tsx src/test-d6-r3-metadata.ts",
     "test:d6-r4": "npx tsx src/test-d6-r4-expansion.ts",
     "test:d6-r5": "npx tsx src/test-d6-r5-diagnostics.ts",
-    "test:d6-r5:strict": "npx tsx src/test-d6-r5-diagnostics.ts --strict"
+    "test:d6-r5:strict": "npx tsx src/test-d6-r5-diagnostics.ts --strict",
+    "test:d6-r6": "npx tsx src/test-d6-r6-contract.ts"
   },
   "devDependencies": {
     "@types/node": "^22.19.19",

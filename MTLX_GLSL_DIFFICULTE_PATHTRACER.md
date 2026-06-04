@@ -373,15 +373,23 @@ Commentaire path tracer:
 	- Etat: finalise (2026-06-04)
 	- Realisation: promotion configurable warning->error via `--strict` et liste des noeuds promus (`token`, `geomcolor`, `displacement`, `shader`, `material`) avec verdict `ciPass` dans le rapport.
 
-- [ ] D6.R6 - Contrat de donnees runtime (no kernel changes)
-	- Etat: non finalise
+- [x] D6.R6 - Contrat de donnees runtime (no kernel changes)
+	- Etat: finalise (2026-06-04)
+	- Realisation: ajout du module `src/mtlx/runtimeDataContract.ts` definissant le schema versionne `mtlx-d6-runtime-contract-v1` avec payload runtime final (scene, materials, textures, overrides, lights, env, diagnostics) et serialisation stable.
+	- Realisation: ajout du runner `src/test-d6-r6-contract.ts` pour verifier la generation du contrat, la validation pre-load et la compatibilite legacy.
+	- Artefacts: `reports/mtlx-d6-r6-contract.json` et `reports/mtlx-d6-r6-contract.md`.
+	- Validation: `npm run test:d6-r6` OK, `npm run build` OK.
+	- Resultat courant: `files=3`, `validation valid=3`, `legacyInputMigrated=3`, `legacyLoadValidated=3`, determinisme de serialisation OK.
 	- Cible: etablir un format de donnees finales consomme par le runtime (materials, textures, overrides, lights, env) sans ajouter de logique D6 dans les shaders.
-- [ ] D6.R6.a - Definir un schema versionne des donnees
-	- Etat: non finalise
-- [ ] D6.R6.b - Valider le schema avant chargement scene
-	- Etat: non finalise
-- [ ] D6.R6.c - Garantir la compatibilite ascendante des scenes existantes
-	- Etat: non finalise
+- [x] D6.R6.a - Definir un schema versionne des donnees
+	- Etat: finalise (2026-06-04)
+	- Realisation: schema explicite `mtlx-d6-runtime-contract-v1` avec sections nommees `sourceSchemas`, `compatibility`, `scene`, `materials`, `textures`, `overrides`, `lights`, `env`, `diagnostics`.
+- [x] D6.R6.b - Valider le schema avant chargement scene
+	- Etat: finalise (2026-06-04)
+	- Realisation: validation structurelle via `validateRuntimeDataContract(...)` et gate de chargement via `loadRuntimeDataContract(...)` (mode strict supporte).
+- [x] D6.R6.c - Garantir la compatibilite ascendante des scenes existantes
+	- Etat: finalise (2026-06-04)
+	- Realisation: migration des entrees legacy (`legacy-scene-assignment`, `legacy-runtime-metadata`) vers les schemas runtime D6 et adaptation d un payload legacy partiel au chargement.
 
 - [ ] D6.R7 - Tests pipeline D6
 	- Etat: non finalise

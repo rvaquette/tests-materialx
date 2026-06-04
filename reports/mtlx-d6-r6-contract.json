@@ -1,0 +1,102 @@
+{
+  "generatedAt": "2026-06-04T10:11:23.489Z",
+  "schema": "mtlx-d6-runtime-contract-v1",
+  "fixtures": [
+    {
+      "file": "materialx/Materials/TestSuite/stdlib/texture/udim.mtlx",
+      "schema": "mtlx-d6-runtime-contract-v1",
+      "activeLook": null,
+      "materials": 1,
+      "textures": 0,
+      "overrides": 0,
+      "lights": 0,
+      "envType": "none",
+      "diagnostics": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "validation": {
+        "valid": true,
+        "errors": 0,
+        "warnings": 0
+      },
+      "compatibility": {
+        "migratedLegacyInputs": true
+      }
+    },
+    {
+      "file": "materialx/Materials/TestSuite/stdlib/texture/token_graph_material.mtlx",
+      "schema": "mtlx-d6-runtime-contract-v1",
+      "activeLook": null,
+      "materials": 0,
+      "textures": 0,
+      "overrides": 0,
+      "lights": 0,
+      "envType": "latlong",
+      "diagnostics": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "validation": {
+        "valid": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "compatibility": {
+        "migratedLegacyInputs": true
+      }
+    },
+    {
+      "file": "materialx/Materials/Examples/StandardSurface/standard_surface_chess_set.mtlx",
+      "schema": "mtlx-d6-runtime-contract-v1",
+      "activeLook": "L_ChessSet",
+      "materials": 0,
+      "textures": 0,
+      "overrides": 0,
+      "lights": 0,
+      "envType": "none",
+      "diagnostics": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "validation": {
+        "valid": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "compatibility": {
+        "migratedLegacyInputs": true
+      }
+    }
+  ],
+  "totals": {
+    "files": 3,
+    "materials": 1,
+    "textures": 0,
+    "overrides": 0,
+    "lights": 0,
+    "envEnabled": 1,
+    "diagnostics": {
+      "error": 0,
+      "warning": 1,
+      "info": 1
+    },
+    "validation": {
+      "valid": 3,
+      "invalid": 0,
+      "errors": 0,
+      "warnings": 2
+    },
+    "compatibility": {
+      "legacyInputMigrated": 3,
+      "legacyLoadValidated": 3
+    }
+  },
+  "deterministicSerialization": {
+    "fixture": "materialx/Materials/TestSuite/stdlib/texture/token_graph_material.mtlx",
+    "sameHashOnDoubleSerialization": true
+  }
+}
