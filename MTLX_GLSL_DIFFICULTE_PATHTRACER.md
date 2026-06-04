@@ -391,15 +391,23 @@ Commentaire path tracer:
 	- Etat: finalise (2026-06-04)
 	- Realisation: migration des entrees legacy (`legacy-scene-assignment`, `legacy-runtime-metadata`) vers les schemas runtime D6 et adaptation d un payload legacy partiel au chargement.
 
-- [ ] D6.R7 - Tests pipeline D6
-	- Etat: non finalise
+- [x] D6.R7 - Tests pipeline D6
+	- Etat: finalise (2026-06-04)
+	- Realisation: ajout du runner `src/test-d6-r7-pipeline.ts` couvrant golden tests, non-regressions scene et erreurs attendues preprocess, avec emission de rapport JSON + markdown.
+	- Realisation: ajout du script `npm run test:d6-r7` dans `package.json`.
+	- Artefacts: `reports/mtlx-d6-r7-pipeline.json` et `reports/mtlx-d6-r7-pipeline.md`.
+	- Validation: `npm run test:d6-r7` OK (via `cmd /c npm run test:d6-r7`), `npm run build` OK.
+	- Resultat courant: `tests=9`, `pass=9`, `fail=0`, determinisme non-regression OK.
 	- Cible: couvrir la traduction scene et la robustesse preprocess, sans asserts GLSL specifiques D6.
-- [ ] D6.R7.a - Golden tests sur sorties intermediaires (mapping assignations/proprietes)
-	- Etat: non finalise
-- [ ] D6.R7.b - Tests de non-regression sur scenes avec `look/materialassign/collection`
-	- Etat: non finalise
-- [ ] D6.R7.c - Tests d'erreurs attendues (documents incomplets, references invalides)
-	- Etat: non finalise
+- [x] D6.R7.a - Golden tests sur sorties intermediaires (mapping assignations/proprietes)
+	- Etat: finalise (2026-06-04)
+	- Realisation: assertions golden sur mappings scene (`look_assignment_order`) et propagation metadata (`udim`, `token_graph_material`).
+- [x] D6.R7.b - Tests de non-regression sur scenes avec `look/materialassign/collection`
+	- Etat: finalise (2026-06-04)
+	- Realisation: couverture non-regression sur `look_assignment_order`, `material_node_discovery`, `standard_surface_chess_set` avec checks de cardinalite assignations, look actif et diagnostics collection.
+- [x] D6.R7.c - Tests d'erreurs attendues (documents incomplets, references invalides)
+	- Etat: finalise (2026-06-04)
+	- Realisation: cas valides d erreurs attendues sur references invalides (`LOOK-001`, `LOOK-002`, `NODE-001`, `NODE-002`) et document incomplet (`DOC-001`, `ND-002`).
 
 ## 3.2 Etapes intermediaires D4 (compatibilite complete)
 

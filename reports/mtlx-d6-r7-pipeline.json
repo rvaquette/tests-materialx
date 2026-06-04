@@ -1,0 +1,153 @@
+{
+  "generatedAt": "2026-06-04T11:51:35.242Z",
+  "schema": "mtlx-d6-r7-pipeline-tests-v1",
+  "sections": {
+    "golden": {
+      "fixtures": [
+        {
+          "file": "materialx/Materials/TestSuite/stdlib/geometric/look_assignment_order.mtlx",
+          "status": "pass",
+          "checks": [
+            "mesh /Preview_Mesh -> Blue_Material",
+            "mesh /Calibration_Mesh -> Red_Material"
+          ]
+        },
+        {
+          "file": "materialx/Materials/TestSuite/stdlib/texture/udim.mtlx",
+          "status": "pass",
+          "checks": [
+            "cube_material exists",
+            "udimset stringarray propagated"
+          ]
+        },
+        {
+          "file": "materialx/Materials/TestSuite/stdlib/texture/token_graph_material.mtlx",
+          "status": "pass",
+          "checks": [
+            "top-level token Brass_Image_Extension=jpg",
+            "token mirrored into unassigned runtime properties"
+          ]
+        }
+      ],
+      "pass": 3,
+      "fail": 0
+    },
+    "nonRegression": {
+      "fixtures": [
+        {
+          "file": "materialx/Materials/TestSuite/stdlib/geometric/look_assignment_order.mtlx",
+          "status": "pass",
+          "activeLook": "Look",
+          "lookCount": 1,
+          "assignmentCount": 2,
+          "diagnostics": {
+            "error": 0,
+            "warning": 0,
+            "info": 0
+          },
+          "checks": [
+            "active look remains Look",
+            "resolved assignment cardinality remains 2"
+          ]
+        },
+        {
+          "file": "materialx/Materials/TestSuite/stdlib/materials/material_node_discovery.mtlx",
+          "status": "pass",
+          "activeLook": "look1",
+          "lookCount": 3,
+          "assignmentCount": 0,
+          "diagnostics": {
+            "error": 0,
+            "warning": 6,
+            "info": 0
+          },
+          "checks": [
+            "collection-based assign still emits D6R2-COLL-003 warning",
+            "no scene-level error regression"
+          ]
+        },
+        {
+          "file": "materialx/Materials/Examples/StandardSurface/standard_surface_chess_set.mtlx",
+          "status": "pass",
+          "activeLook": "L_ChessSet",
+          "lookCount": 1,
+          "assignmentCount": 15,
+          "diagnostics": {
+            "error": 0,
+            "warning": 0,
+            "info": 0
+          },
+          "checks": [
+            "active look remains L_ChessSet",
+            "at least 15 resolved assignments preserved"
+          ]
+        }
+      ],
+      "pass": 3,
+      "fail": 0,
+      "deterministicSerialization": {
+        "fixture": "materialx/Materials/Examples/StandardSurface/standard_surface_chess_set.mtlx",
+        "sameHashOnDoubleSerialization": true
+      }
+    },
+    "expectedErrors": {
+      "cases": [
+        {
+          "caseId": "invalid-node-references",
+          "status": "pass",
+          "expected": [
+            "NODE-001",
+            "NODE-002"
+          ],
+          "observed": [
+            "NODE-001",
+            "NODE-002"
+          ],
+          "checks": [
+            "Unresolved nodename is detected.",
+            "Unresolved nodegraph is detected."
+          ]
+        },
+        {
+          "caseId": "invalid-references",
+          "status": "pass",
+          "expected": [
+            "LOOK-001",
+            "LOOK-002"
+          ],
+          "observed": [
+            "LOOK-001",
+            "LOOK-002"
+          ],
+          "checks": [
+            "Unknown material reference reported.",
+            "Unknown collection reference reported."
+          ]
+        },
+        {
+          "caseId": "incomplete-document",
+          "status": "pass",
+          "expected": [
+            "DOC-001",
+            "ND-002"
+          ],
+          "observed": [
+            "DOC-001",
+            "ND-002"
+          ],
+          "checks": [
+            "Missing version detected.",
+            "Nodedef without output detected."
+          ]
+        }
+      ],
+      "pass": 3,
+      "fail": 0
+    }
+  },
+  "totals": {
+    "tests": 9,
+    "pass": 9,
+    "fail": 0
+  }
+}
